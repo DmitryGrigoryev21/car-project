@@ -1,0 +1,32 @@
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com.grigoryev: DEBUG
+app:
+  car-service:
+    host: localhost
+    port: 7001
+  engine-service:
+    host: localhost
+    port: 7002
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+server.port: 8080
+
+app:
+  car-service:
+    host: car-service
+    port: 8080
+  engine-service:
+    host: engine-service
+    port: 8080

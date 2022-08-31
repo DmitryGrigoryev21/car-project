@@ -1,0 +1,80 @@
+services:
+  api-gateway:
+    build: api-gateway
+    hostname: api-gateway
+#    ports:
+#      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - car-service
+      - engine-service
+
+  car-service:
+    build: car-service
+    hostname: car-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mongo1
+
+  engine-service:
+    build: engine-service
+    hostname: engine-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mongo2
+
+  mongo1:
+    image: mongo
+    container_name: mongo1
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    #    volumes:
+    #     - /C/Mine/mongoData:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      retries: 5
+      interval: 15s
+      start_period: 30s
+
+  mongo2:
+    image: mongo
+    container_name: mongo2
+    restart: always
+    ports:
+      - 27018:27018
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    #    volumes:
+    #     - /C/Mine/mongoData:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27018/test --quiet
+      retries: 5
+      interval: 15s
+      start_period: 30s
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongo2
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo1
+      - mongo2
+      - car-service
+      - engine-service
+      - api-gateway

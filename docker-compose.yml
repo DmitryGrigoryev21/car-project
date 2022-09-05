@@ -2,8 +2,8 @@ services:
   api-gateway:
     build: api-gateway
     hostname: api-gateway
-#    ports:
-#      - "8080:8080"
+    ports:
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -21,8 +21,6 @@ services:
   engine-service:
     build: engine-service
     hostname: engine-service
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:

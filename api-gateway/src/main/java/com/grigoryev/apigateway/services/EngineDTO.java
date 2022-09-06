@@ -16,4 +16,12 @@ public class EngineDTO {
     private Integer cylinders;
     private Integer price;
 
+    public EngineDTO(String engineUUID, String carUUID, String name, String fuelType, Integer cylinders, Integer price) {
+        this.engineUUID = engineUUID;
+        this.carUUID = carUUID;
+        this.name = name;
+        this.fuelType = fuelType;
+        this.cylinders = cylinders;
+        this.price = price;
+    }
 }

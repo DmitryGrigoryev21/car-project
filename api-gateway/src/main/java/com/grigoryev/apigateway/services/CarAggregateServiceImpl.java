@@ -38,8 +38,13 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 .doOnNext(e -> e.setEngine(engineServiceClient.getEnginesByCarUUID(e.getCarUUID())));
     }
 
-    @Override
-    public Mono<CarAggregateDTO> setCarAggregate(Mono<CarAggregateDTO> carAggregateDTOMono) {
-        return carAggregateDTOMono.flatMap(i -> i.)
-    }
+//    @Override
+//    public Mono<CarAggregateDTO> setCarAggregate(Mono<CarAggregateDTO> carAggregateDTOMono) {
+//        return carAggregateDTOMono.flatMap(x -> {
+//            CarDTO carDTO = new CarDTO(x.getCarUUID(),x.getModelName(), x.getType(), x.getWeight(), x.getLength(), x.getHeight(), x.getBasePrice());
+//            carServiceClient.setCar(carDTO);
+//            EngineDTO engineDTO = new EngineDTO();
+//            engineDTO.setCylinders(x.getEngine().flatMap(k -> k.getCylinders()));
+//        });
+//    }
 }

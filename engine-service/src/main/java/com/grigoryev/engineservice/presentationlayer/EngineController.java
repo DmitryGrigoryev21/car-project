@@ -31,10 +31,8 @@ public class EngineController {
 
 
     @GetMapping("/car/{carUUID}")
-    public Flux<ResponseEntity<EngineDTO>> getEngineByCarUUID(@PathVariable String carUUID){
-        return engineService.getEnginesByCarUUID(carUUID)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Flux<EngineDTO> getEngineByCarUUID(@PathVariable String carUUID){
+        return engineService.getEnginesByCarUUID(carUUID);
     }
 
 

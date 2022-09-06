@@ -23,10 +23,8 @@ public class CarController {
 
 
     @GetMapping("/{carUUID}")
-    public Mono<ResponseEntity<CarDTO>> getCarByCarUUID(@PathVariable String carUUID){
-        return carService.getCarByCarUUID(carUUID)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Mono<CarDTO> getCarByCarUUID(@PathVariable String carUUID){
+        return carService.getCarByCarUUID(carUUID);
     }
 
 

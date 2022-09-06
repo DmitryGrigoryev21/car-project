@@ -10,40 +10,40 @@ logging:
 spring:
   config:
     activate:
-      on-profile: default
-
-  data:
-    mongodb:
-      host: localhost
-      port: 27018
-      database: engine
-      username: root
-      password: password
-      authentication-database: admin
-
----
-spring:
-  config:
-    activate:
-      on-profile: integration
-  data:
-    mongodb:
-      host: localhost
-      port: 27018
-      database: engine
-      username: root
-      password: password
-      authentication-database: admin
----
-spring:
-  config:
-    activate:
       on-profile: docker
   data:
     mongodb:
-      host: mongo
+      host: mongo2
       port: 27018
       database: engine
       username: root
       password: password
       authentication-database: admin
+#spring:
+#  config:
+#    activate:
+#      on-profile: default
+#
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27018
+#      database: engine
+#      username: root
+#      password: password
+#      authentication-database: admin
+#
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: integration
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27018
+#      database: engine
+#      username: root
+#      password: password
+#      authentication-database: admin
+#---

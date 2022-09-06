@@ -10,4 +10,5 @@ public interface EngineRepository extends ReactiveMongoRepository<Engine, String
     Mono<Engine> findEngineByEngineUUID(String engineUUID);
     Flux<Engine> findEnginesByCarUUID(String carUUID);
     Mono<Void> deleteEngineByEngineUUID(String engineUUID);
+    Flux<Void> deleteEngineByCarUUID(String carUUID);
 }

@@ -52,4 +52,9 @@ public class EngineController {
     public Mono<Void> deleteEngineByEngineUUID(@PathVariable String engineUUID){
         return engineService.deleteEngine(engineUUID);
     }
+
+    @DeleteMapping("/car/{carUUID}")
+    public Flux<Void> deleteEngineByCarUUID(@PathVariable String carUUID){
+        return engineService.deleteEngineByCar(carUUID);
+    }
 }

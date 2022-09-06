@@ -64,4 +64,9 @@ public class EngineServiceImpl implements EngineService {
     public Mono<Void> deleteEngine(String engineUUID) {
         return repository.deleteEngineByEngineUUID(engineUUID);
     }
+
+    @Override
+    public Flux<Void> deleteEngineByCar(String engineUUID) {
+        return repository.deleteEngineByCarUUID(engineUUID);
+    }
 }

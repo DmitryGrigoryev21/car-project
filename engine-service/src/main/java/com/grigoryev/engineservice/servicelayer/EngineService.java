@@ -16,4 +16,6 @@ public interface EngineService {
     public Mono<EngineDTO> updateEngine(String engineUUID, Mono<EngineDTO> engineDTOMono);
 
     public Mono<Void> deleteEngine(String engineUUID);
+
+    public Flux<Void> deleteEngineByCar(String engineUUID);
 }

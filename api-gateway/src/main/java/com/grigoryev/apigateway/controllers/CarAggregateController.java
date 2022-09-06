@@ -2,6 +2,7 @@ package com.grigoryev.apigateway.controllers;
 
 import com.grigoryev.apigateway.services.CarAggregateDTO;
 import com.grigoryev.apigateway.services.CarAggregateService;
+import com.grigoryev.apigateway.services.EngineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,27 @@ public class CarAggregateController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+
+//test
+//    @GetMapping(
+//            value = "/engine",
+//            produces = "application/json"
+//    )
+//    public Flux<EngineDTO> getAllEngines(){
+//        return carAggregateService.getEngineDTOs();
+//    }
+//
+//    @GetMapping(
+//            value = "/engine/car/{uuid}",
+//            produces = "application/json"
+//    )
+//    public Flux<EngineDTO> getAllEngines(@PathVariable String uuid){
+//        return carAggregateService.getEngineDTObycar(uuid);
+//    }
+//
+//
+//-------
+
 //    @PostMapping(
 //            value = "/car",
 //            consumes = "application/json"
@@ -55,11 +77,11 @@ public class CarAggregateController {
 //        return ResponseEntity.status(HttpStatus.OK).body(carAggregateService.updateAggregate(updateAgg, uuid));
 //    }
 //
-//    @DeleteMapping(
-//            value = "/car/{caruuid}"
-//    )
-//    public void deleteAggregate(@PathVariable String uuid){
-//
-//        carAggregateService.delete(uuid);
-//    }
+    @DeleteMapping(
+            value = "/car/{carUUID}",
+            produces = "application/json"
+    )
+    public Mono<Void> delete(@PathVariable String carUUID){
+        return carAggregateService.deleteCarAggregate(carUUID);
+    }
 }

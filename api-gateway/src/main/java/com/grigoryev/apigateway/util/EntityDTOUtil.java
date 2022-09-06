@@ -21,6 +21,12 @@ public class EntityDTOUtil {
         return carAggregateDTO;
     }
 
+    public static CarDTO toNonAggregateDTO(CarAggregateDTO carAggregateDTO){
+        CarDTO carDTO = new CarDTO();
+        BeanUtils.copyProperties(carAggregateDTO, carDTO);
+        return carDTO;
+    }
+
     public static CarAggregate toEntity(CarAggregateDTO carAggregateDTO){
         CarAggregate carAggregate = new CarAggregate();
         BeanUtils.copyProperties(carAggregateDTO,carAggregate);

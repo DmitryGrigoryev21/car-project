@@ -68,4 +68,11 @@ public class EngineServiceClient {
                 .retrieve()
                 .bodyToMono(Void.class);
     }
+
+    public Flux<Void> deleteEngineByCar(String name) {
+        return this.webClient.delete()
+                .uri("/car/{name}", name)
+                .retrieve()
+                .bodyToFlux(Void.class);
+    }
 }

@@ -24,10 +24,8 @@ public class CarAggregateController {
             value = "/car",
             produces = "application/json"
     )
-    public Flux<ResponseEntity<CarAggregateDTO>> getAllCarAggregates(){
-        return carAggregateService.getAllCarAggregates()
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Flux<CarAggregateDTO> getAllCarAggregates(){
+        return carAggregateService.getAllCarAggregates();
     }
 
     @GetMapping(

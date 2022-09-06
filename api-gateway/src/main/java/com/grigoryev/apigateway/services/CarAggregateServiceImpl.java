@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +27,15 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 .map(EntityDTOUtil::toAggregateDTO)
                 .collectList()
                 .flatMapIterable(x -> {
-                    x.forEach(e -> e.setEngine(engineServiceClient.getEnginesByCarUUID(e.getCarUUID())));
+                    //x.forEach(e -> e.setEngine(engineServiceClient.getEnginesByCarUUID(e.getCarUUID())));
+                    x.forEach(e -> engineServiceClient.getEnginesByCarUUID(e.getCarUUID())
+                            .collectList()
+                            .flatMapIterable(y -> {
+                                List<EngineDTO> engineDTOS = new ArrayList<>();
+                                y.forEach(i -> engineDTOS.add(engineServiceClient.getEngineByEngineUUID(i.getEngineUUID()).block()));
+                                e.setEngine(engineDTOS);
+                                return y;
+                            }));
                     return x;
                 });
     }
@@ -35,7 +44,14 @@ public class CarAggregateServiceImpl implements CarAggregateService{
     public Mono<CarAggregateDTO> getCarAggregate(String carUUID) {
         return carServiceClient.getCarByCarUUID(carUUID)
                 .map(EntityDTOUtil::toAggregateDTO)
-                .doOnNext(e -> e.setEngine(engineServiceClient.getEnginesByCarUUID(e.getCarUUID())));
+                .doOnNext(e -> engineServiceClient.getEnginesByCarUUID(e.getCarUUID())
+                        .collectList()
+                        .flatMapIterable(y -> {
+                            List<EngineDTO> engineDTOS = new ArrayList<>();
+                            y.forEach(i -> engineDTOS.add(engineServiceClient.getEngineByEngineUUID(i.getEngineUUID()).block()));
+                            e.setEngine(engineDTOS);
+                            return y;
+                        }));
     }
 
 //    @Override

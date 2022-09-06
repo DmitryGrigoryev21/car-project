@@ -10,6 +10,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/api-gateway" />
+            <option value="$PROJECT_DIR$/car-service" />
+            <option value="$PROJECT_DIR$/engine-service" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -43,9 +46,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/engine-service" />
-            <option value="$PROJECT_DIR$/engine-service/api-gateway" />
-            <option value="$PROJECT_DIR$/engine-service/car-service" />
-            <option value="$PROJECT_DIR$/engine-service/engine-service" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,6 +23,6 @@ public class CarAggregate {
     private Integer length;
     private Integer height;
     private Integer basePrice;
-    private Flux<EngineDTO> engine; //may need to change to flux
+    private List<EngineDTO> engine; //may need to change to flux
 
 }

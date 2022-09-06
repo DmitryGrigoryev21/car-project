@@ -32,4 +32,11 @@ public class EntityDTOUtil {
         BeanUtils.copyProperties(carAggregateDTO,carAggregate);
         return carAggregate;
     }
+
+    public static CarAggregateDTO getAggregateDTO(ContextUtil contextUtil) {
+
+        contextUtil.getCarAggregateDTO().setEngine(contextUtil.getEngineDTOS());
+        return contextUtil.getCarAggregateDTO();
+    }
+
 }

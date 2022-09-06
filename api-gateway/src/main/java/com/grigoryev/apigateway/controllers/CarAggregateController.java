@@ -33,7 +33,7 @@ public class CarAggregateController {
             value = "/car/{carUUID}",
             produces = "application/json"
     )
-    public Mono<ResponseEntity<CarAggregateDTO>> getAllCarByCarUUID(@PathVariable String carUUID){
+    public Mono<ResponseEntity<CarAggregateDTO>> getCarByCarUUID(@PathVariable String carUUID){
         return carAggregateService.getCarAggregate(carUUID)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -49,13 +49,13 @@ public class CarAggregateController {
 //        return carAggregateService.getEngineDTOs();
 //    }
 //
-//    @GetMapping(
-//            value = "/engine/car/{uuid}",
-//            produces = "application/json"
-//    )
-//    public Flux<EngineDTO> getAllEngines(@PathVariable String uuid){
-//        return carAggregateService.getEngineDTObycar(uuid);
-//    }
+    @GetMapping(
+            value = "/engine/car/{uuid}",
+            produces = "application/json"
+    )
+    public Flux<EngineDTO> getAllEngines(@PathVariable String uuid){
+        return carAggregateService.test(uuid);
+    }
 //
 //
 //-------

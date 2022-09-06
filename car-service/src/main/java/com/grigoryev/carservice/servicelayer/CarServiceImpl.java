@@ -16,7 +16,6 @@ public class CarServiceImpl implements CarService {
     @Override
     public Flux<CarDTO> getAll(){
         return repository.findAll()
-
                 .map(EntityDTOUtil::toDTO);
     }
 

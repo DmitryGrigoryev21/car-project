@@ -17,8 +17,7 @@ public class CarDTO {
     private Integer height;
     private Integer basePrice;
 
-    public CarDTO(String carUUID, String modelName, String type, Integer weight, Integer length, Integer height, Integer basePrice) {
-        this.carUUID = carUUID;
+    public CarDTO(String modelName, String type, Integer weight, Integer length, Integer height, Integer basePrice) {
         this.modelName = modelName;
         this.type = type;
         this.weight = weight;

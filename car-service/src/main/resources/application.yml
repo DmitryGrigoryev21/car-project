@@ -7,6 +7,15 @@ logging:
     root: INFO
     com.grigoryev: DEBUG
 
+data:
+  mongodb:
+    port: 0
+    database: car
+
+mongodb:
+  embedded:
+    version: 4.8.21
+
 spring:
   config:
     activate:

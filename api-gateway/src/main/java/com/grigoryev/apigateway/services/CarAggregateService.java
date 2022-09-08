@@ -8,7 +8,7 @@ public interface CarAggregateService {
     public Flux<CarAggregateDTO> getAllCarAggregates();
     public Mono<CarAggregateDTO> getCarAggregate(String carUUID);
     public Mono<Void> deleteCarAggregate(String carUUID);
+    public Mono<CarAggregateDTO> setCarAggregate(CarAggregateDTO carAggregateDTO);
 //    public Mono<CarAggregateDTO> setCarAggregate(Mono<CarAggregateDTO> carAggregateDTOMono);
 
-    public Flux<EngineDTO> test(String carUUID);
 }

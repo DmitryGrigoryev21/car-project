@@ -48,7 +48,7 @@ class EngineControllerIntegrationTest {
                 .verifyComplete();
 
         client.get()
-                .uri("engine/" + ENGINE_ID_OKAY_UUID)
+                .uri("/engine/" + ENGINE_ID_OKAY_UUID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()

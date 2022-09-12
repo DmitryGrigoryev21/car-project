@@ -33,7 +33,7 @@ class EngineServiceImplTest {
     @Test
     void getAll() {
 
-
+        // Do not know
     }
 
     @Test
@@ -60,7 +60,7 @@ class EngineServiceImplTest {
 
         Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
 
-        StepVerifier.create(engineDTOMono)      // What makes this more reactive than the previous stuff we have completed in WebServices?
+        StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
                     assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
                     assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
@@ -80,45 +80,30 @@ class EngineServiceImplTest {
 
         Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
 
-        StepVerifier.create(engineDTOMono)      // What makes this more reactive than the previous stuff we have completed in WebServices?
+        StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
                     assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
                     assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
                     assertEquals(engineEntity.getFuelType(), foundEngine.getFuelType());
                 })
                 .verifyComplete();
+
     }
 
     @Test
     void updateEngine() {
-        Engine engineEntity = buildEngine();
-        Engine updatedEngine = Engine.builder().id("Id").engineUUID("EngineUUID")
-                .carUUID("CarUUID").name("LB7").cylinders(8).fuelType("Diesel").price(6700).build();
-
-        EntityDTOUtil dtoObj = new EntityDTOUtil();
-
-        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
-
-        engineService.updateEngine(engineEntity.getEngineUUID(), Mono.just(dtoObj.toDTO(updatedEngine)));
-
-        assertNotEquals(Mono.just(engineEntity), repo.findEngineByEngineUUID(updatedEngine.getEngineUUID()));
 
     }
 
     @Test
     void deleteEngineByEngineUUID() {
-        Engine engineEntity = buildEngine();
-        engineService.deleteEngine(engineEntity.getEngineUUID());
+
+
     }
 
     @Test
     void deleteEngineByCarUUID() {
 
-        Engine engineEntity = buildEngine();
-
-        engineService.deleteEngineByCar(engineEntity.getCarUUID());
-
-        assertNull(repo.findEnginesByCarUUID(engineEntity.getCarUUID()));
 
     }
 

@@ -6,14 +6,17 @@ server:
       root: INFO
       com.grigoryev: DEBUG
 
-data:
+spring:
+  config:
+    activate:
+      on-profile: default
+  data:
+    mongodb:
+      port: 0
+      database: engine
   mongodb:
-    port: 0
-    database: car
-
-mongodb:
-  embedded:
-    version: 4.8.21
+    embedded:
+      version: 4.0.21
 
 ---
 spring:

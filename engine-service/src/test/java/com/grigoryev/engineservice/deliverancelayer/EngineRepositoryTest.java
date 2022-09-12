@@ -3,11 +3,10 @@ package com.grigoryev.engineservice.deliverancelayer;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
 class EngineRepositoryTest {
@@ -15,8 +14,6 @@ class EngineRepositoryTest {
     @Autowired
     private EngineRepository repo;
 
-    // 2022-09-12 00:05:18.510  INFO 4420 --- [    Test worker] org.mongodb.driver.cluster               : No server chosen by com.mongodb.reactivestreams.client.internal.ClientSessionHelper$$Lambda$1176/0x00000008011d0e40@38e00b47 from cluster description ClusterDescription{type=UNKNOWN, connectionMode=SINGLE, serverDescriptions=[ServerDescription{address=localhost:27017, type=UNKNOWN, state=CONNECTING, exception={com.mongodb.MongoSocketOpenException: Exception opening socket}, caused by {io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: localhost/[0:0:0:0:0:0:0:1]:27017}, caused by {java.net.ConnectException: Connection refused: no further information}}]}. Waiting for 30000 ms before timing out
-    // :)
 
     @Test
     void shouldSaveOneEngine() {
@@ -27,18 +24,72 @@ class EngineRepositoryTest {
                 .create(setup)
                 .expectNextCount(1)
                 .verifyComplete();
+
     }
 
     @Test
-    void findEnginesByCarUUID() {
+    void shouldFindEnginesByCarUUID() {
+
+        Engine engine = buildEngine();
+
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engine));
+
+        Publisher<Engine> test = repo.findEnginesByCarUUID(engine.getCarUUID());
+
+        Publisher<Engine> test2 = Flux.from(setup).thenMany(test);
+
+        StepVerifier
+                .create(test2)
+                .expectNext(engine)
+                .verifyComplete();
+    }
+
+
+    @Test
+    void shouldFindEngineByEngineUUID() {
+
+        Engine engine = buildEngine();
+
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engine));
+
+        Publisher<Engine> test = repo.findEngineByEngineUUID(engine.getEngineUUID());
+
+        Publisher<Engine> test2 = Flux.from(setup).thenMany(test);
+
+        StepVerifier
+                .create(test2)
+                .expectNext(engine)
+                .verifyComplete();
     }
 
     @Test
-    void deleteEngineByEngineUUID() {
+    void shouldDeleteEngineByEngineUUID() {
+
+        Engine engine = buildEngine();
+
+        repo.save(engine);
+
+        Publisher<Void> setup = repo.deleteEngineByEngineUUID(engine.getEngineUUID());
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     @Test
-    void deleteEngineByCarUUID() {
+    void shouldDeleteEngineByCarUUID() {
+
+        Engine engine = buildEngine();
+
+        repo.save(engine);
+
+        Publisher<Void> setup = repo.deleteEngineByCarUUID(engine.getCarUUID());
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     private Engine buildEngine(){

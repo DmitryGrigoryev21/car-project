@@ -51,6 +51,18 @@ public class CarAggregateController {
 
     }
 
+    @PostMapping(
+            value = "/test",
+            consumes = "application/json"
+    )
+    public Mono<ResponseEntity<EngineDTO>> test(@RequestBody EngineDTO engineDTO){
+
+        return carAggregateService.test(engineDTO)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+
+    }
+
 //    @PutMapping(
 //            value = "/car/{caruuid}",
 //            consumes = "application/json"

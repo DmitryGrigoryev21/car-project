@@ -10,7 +10,7 @@ logging:
 data:
   mongodb:
     port: 0
-    database: car
+    database: engine
 
 mongodb:
   embedded:

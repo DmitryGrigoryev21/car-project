@@ -65,25 +65,34 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                         ));
     }
 
+
     @Override
     public Mono<CarAggregateDTO> setCarAggregate(CarAggregateDTO carAggregateDTO){
-        CarDTO carDTO = new CarDTO(
-                carAggregateDTO.getModelName(),
-                carAggregateDTO.getType(),
-                carAggregateDTO.getWeight(),
-                carAggregateDTO.getLength(),
-                carAggregateDTO.getHeight(),
-                carAggregateDTO.getBasePrice());
-        carServiceClient.setCar(carDTO)
-                .doOnNext(x -> {
-                    String newCarUUID = x.getCarUUID();
-                    List<EngineDTO> engineDTOS = carAggregateDTO.getEngine();
-                    for (EngineDTO e : engineDTOS){
-                        e.setCarUUID(newCarUUID);
-                        engineServiceClient.setEngine(e);
+        return Mono.just(carAggregateDTO)
+                .map(EntityDTOUtil::toNonAggregateDTO)
+                .flatMap(carServiceClient::setCar)
+                .map(x -> {
+                    carAggregateDTO.setCarUUID(x.getCarUUID());
+                    return carAggregateDTO;
+                })
+                .flatMap(x -> Mono.just(x.getEngine()))
+                .doOnNext(x -> x.forEach(y -> y.setCarUUID(carAggregateDTO.getCarUUID())))
+//                .doOnNext(x -> x.forEach(engineServiceClient::setEngine))
+                .map(x -> {
+                    List<Mono<EngineDTO>> temp = new ArrayList<>();
+                    for (EngineDTO e : x){
+                        temp.add(engineServiceClient.setEngine(e));
                     }
+                })
+                .map(x -> {
+                    carAggregateDTO.setEngine(x);
+                    return carAggregateDTO;
                 });
-        return Mono.just(carAggregateDTO);
+    }
+
+    @Override
+    public Mono<EngineDTO> test(EngineDTO engineDTO){
+        return engineServiceClient.setEngine(engineDTO);
     }
 
     // todo update

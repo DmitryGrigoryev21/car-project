@@ -45,6 +45,7 @@ services:
 
   mongo2:
     image: mongo
+#    command: -v
     container_name: mongo2
     restart: always
     ports:

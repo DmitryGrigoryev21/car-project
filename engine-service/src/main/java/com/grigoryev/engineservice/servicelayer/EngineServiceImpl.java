@@ -22,6 +22,7 @@ public class EngineServiceImpl implements EngineService {
 
     @Override
     public Mono<EngineDTO> insertEngine(Mono<EngineDTO> engineDTOMono){
+        System.out.println("Engine service: insertEngine: " + engineDTOMono);
         return engineDTOMono
                 .map(EntityDTOUtil::toEntity)
                 .doOnNext(e -> e.setEngineUUID(EntityDTOUtil.generateUUID()))

@@ -4,7 +4,7 @@ server:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     com.grigoryev: DEBUG
 app:
   car-service:

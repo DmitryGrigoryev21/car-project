@@ -47,6 +47,7 @@ public class EngineServiceClient {
     }
 
     public Mono<EngineDTO> setEngine(EngineDTO engineDTO) {
+        System.out.println("setEngine: " + engineDTO);
         return this.webClient.post()
                 .uri("")
                 .body(Mono.just(engineDTO), EngineDTO.class)

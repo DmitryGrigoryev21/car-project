@@ -91,10 +91,9 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 .map(x -> carAggregateDTO)
                 .map(CarAggregateDTO::getEngine)
                 .flatMapMany(Flux::fromIterable)
-                .flatMap(x -> engineServiceClient.updateEngine(carUUID, x))
+                .flatMap(x -> engineServiceClient.updateEngine(x.getEngineUUID(), x))
                 .collectList()
                 .map(x -> carAggregateDTO);
-        //test
     }
 
     @Override

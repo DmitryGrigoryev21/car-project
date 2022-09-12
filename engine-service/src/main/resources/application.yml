@@ -1,20 +1,19 @@
 server:
-  port: 7001
+  error:
+    include-message: always
   logging:
     level:
       root: INFO
-      com.alves: DEBUG
-  spring:
-    config:
-      activate:
-        on-profile: default
-    data:
-      mongodb:
-        port: 0
-        database: engine
-    mongodb:
-      embedded:
-        version: 4.0.21
+      com.grigoryev: DEBUG
+
+data:
+  mongodb:
+    port: 0
+    database: car
+
+mongodb:
+  embedded:
+    version: 4.8.21
 
 ---
 spring:

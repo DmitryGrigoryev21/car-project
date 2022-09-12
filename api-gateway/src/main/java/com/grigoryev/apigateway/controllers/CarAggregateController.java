@@ -2,6 +2,7 @@ package com.grigoryev.apigateway.controllers;
 
 import com.grigoryev.apigateway.services.CarAggregateDTO;
 import com.grigoryev.apigateway.services.CarAggregateService;
+import com.grigoryev.apigateway.services.CarDTO;
 import com.grigoryev.apigateway.services.EngineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,16 @@ public class CarAggregateController {
     )
     public Mono<ResponseEntity<CarAggregateDTO>> updateAggregate(@RequestBody CarAggregateDTO carAggregateDTO, @PathVariable String carUUID){
         return carAggregateService.updateCarAggregate(carAggregateDTO, carUUID)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping(
+            value = "/test/{carUUID}",
+            consumes = "application/json"
+    )
+    public Mono<ResponseEntity<EngineDTO>> test(@RequestBody EngineDTO engineDTO, @PathVariable String carUUID){
+        return carAggregateService.test(carUUID, engineDTO)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

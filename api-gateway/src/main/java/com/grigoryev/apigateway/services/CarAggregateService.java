@@ -11,4 +11,6 @@ public interface CarAggregateService {
     public Mono<CarAggregateDTO> setCarAggregate(CarAggregateDTO carAggregateDTO);
     public Mono<CarAggregateDTO> updateCarAggregate(CarAggregateDTO carAggregateDTO, String carUUID);
 
+    public Mono<EngineDTO> test(String engineUUID, EngineDTO engineDTO);
+
 }

@@ -49,11 +49,6 @@ public class EngineServiceImpl implements EngineService {
                 .flatMap(p -> engineDTOMono
                         .map(EntityDTOUtil::toEntity)
                         .doOnNext(e -> e.setEngineUUID(p.getEngineUUID()))
-                        .doOnNext(e -> e.setCarUUID(p.getCarUUID()))
-                        .doOnNext(e -> e.setName(p.getName()))
-                        .doOnNext(e -> e.setFuelType(p.getFuelType()))
-                        .doOnNext(e -> e.setCylinders(p.getCylinders()))
-                        .doOnNext(e -> e.setPrice(p.getPrice()))
                         .doOnNext(e -> e.setId(p.getId()))
                 )
                 .flatMap(repository::save)

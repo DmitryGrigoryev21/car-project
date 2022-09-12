@@ -1,5 +1,6 @@
 package com.grigoryev.carservice.presentationlayer;
 
+import com.grigoryev.carservice.deliverancelayer.Car;
 import com.grigoryev.carservice.servicelayer.CarDTO;
 import com.grigoryev.carservice.servicelayer.CarService;
 import org.springframework.beans.factory.annotation.Autowired;

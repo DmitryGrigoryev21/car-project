@@ -1,5 +1,6 @@
 package com.grigoryev.carservice.servicelayer;
 
+import com.grigoryev.carservice.deliverancelayer.Car;
 import com.grigoryev.carservice.deliverancelayer.CarRepository;
 import com.grigoryev.carservice.util.EntityDTOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,6 @@ public class CarServiceImpl implements CarService {
                 .map(EntityDTOUtil::toDTO);
     }
 
-
     @Override
     public Mono<CarDTO> updateCar(String carUUID, Mono<CarDTO> carDTOMono) {
 
@@ -42,17 +42,11 @@ public class CarServiceImpl implements CarService {
                 .flatMap(p -> carDTOMono
                         .map(EntityDTOUtil::toEntity)
                         .doOnNext(e -> e.setCarUUID(p.getCarUUID()))
-                        .doOnNext(e -> e.setModelName(p.getModelName()))
-                        .doOnNext(e -> e.setType(p.getType()))
-                        .doOnNext(e -> e.setWeight(p.getWeight()))
-                        .doOnNext(e -> e.setHeight(p.getHeight()))
-                        .doOnNext(e -> e.setLength(p.getLength()))
-                        .doOnNext(e -> e.setBasePrice(p.getBasePrice()))
+                        .doOnNext(e -> e.setId(p.getId()))
                 )
                 .flatMap(repository::save)
                 .map(EntityDTOUtil::toDTO);
     }
-
 
     @Override
     public Mono<Void> deleteCar(String carUUID) {

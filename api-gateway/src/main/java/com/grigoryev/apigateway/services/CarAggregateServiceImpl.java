@@ -29,7 +29,7 @@ public class CarAggregateServiceImpl implements CarAggregateService{
     @Override
     public Mono<CarAggregateDTO> getCarAggregate(String carUUID) {
 
-        return this.carServiceClient.getCarByCarUUID(carUUID)
+        return carServiceClient.getCarByCarUUID(carUUID)
                 .map(EntityDTOUtil::toAggregateDTO)
                 .flatMap(x -> engineServiceClient.getEnginesByCarUUID(x.getCarUUID())
                         .collectList()
@@ -48,7 +48,7 @@ public class CarAggregateServiceImpl implements CarAggregateService{
     @Override
     public Flux<CarAggregateDTO> getAllCarAggregates() {
 
-        return this.carServiceClient.getAllCars()
+        return carServiceClient.getAllCars()
                 .map(EntityDTOUtil::toAggregateDTO)
                 .flatMap(x -> engineServiceClient.getEnginesByCarUUID(x.getCarUUID())
                         .collectList()
@@ -86,7 +86,7 @@ public class CarAggregateServiceImpl implements CarAggregateService{
 
     @Override
     public Mono<CarAggregateDTO> updateCarAggregate(CarAggregateDTO carAggregateDTO, String carUUID){
-        return this.carServiceClient.getCarByCarUUID(carUUID)
+        return carServiceClient.getCarByCarUUID(carUUID)
                 .flatMap(x -> carServiceClient.updateCar(carUUID, EntityDTOUtil.toNonAggregateDTO(carAggregateDTO)))
                 .map(x -> carAggregateDTO)
                 .map(CarAggregateDTO::getEngine)
@@ -96,7 +96,12 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 .map(x -> carAggregateDTO);
     }
 
-    // todo update
+    @Override
+    public Mono<EngineDTO> test(String engineUUID, EngineDTO engineDTO){
+        return engineServiceClient.updateEngine(engineUUID,engineDTO);
+    }
+
+    // todo make params mono
 
     @Override
     public Mono<Void> deleteCarAggregate(String carUUID){

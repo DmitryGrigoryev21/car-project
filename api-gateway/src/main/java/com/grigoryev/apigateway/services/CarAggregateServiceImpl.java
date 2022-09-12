@@ -94,6 +94,7 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 .flatMap(x -> engineServiceClient.updateEngine(carUUID, x))
                 .collectList()
                 .map(x -> carAggregateDTO);
+        //test
     }
 
     @Override

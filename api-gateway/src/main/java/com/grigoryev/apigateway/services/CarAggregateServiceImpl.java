@@ -26,7 +26,6 @@ public class CarAggregateServiceImpl implements CarAggregateService{
         this.engineServiceClient = engineServiceClient;
     }
 
-
     @Override
     public Mono<CarAggregateDTO> getCarAggregate(String carUUID) {
 
@@ -65,7 +64,6 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                         ));
     }
 
-
     @Override
     public Mono<CarAggregateDTO> setCarAggregate(CarAggregateDTO carAggregateDTO){
         return Mono.just(carAggregateDTO)
@@ -77,13 +75,9 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 })
                 .flatMap(x -> Mono.just(x.getEngine()))
                 .doOnNext(x -> x.forEach(y -> y.setCarUUID(carAggregateDTO.getCarUUID())))
-//                .doOnNext(x -> x.forEach(engineServiceClient::setEngine))
-                .map(x -> {
-                    List<Mono<EngineDTO>> temp = new ArrayList<>();
-                    for (EngineDTO e : x){
-                        temp.add(engineServiceClient.setEngine(e));
-                    }
-                })
+                .flatMapMany(Flux::fromIterable)
+                .flatMap(engineServiceClient::setEngine)
+                .collectList()
                 .map(x -> {
                     carAggregateDTO.setEngine(x);
                     return carAggregateDTO;
@@ -91,8 +85,15 @@ public class CarAggregateServiceImpl implements CarAggregateService{
     }
 
     @Override
-    public Mono<EngineDTO> test(EngineDTO engineDTO){
-        return engineServiceClient.setEngine(engineDTO);
+    public Mono<CarAggregateDTO> updateCarAggregate(CarAggregateDTO carAggregateDTO, String carUUID){
+        return this.carServiceClient.getCarByCarUUID(carUUID)
+                .flatMap(x -> carServiceClient.updateCar(carUUID, EntityDTOUtil.toNonAggregateDTO(carAggregateDTO)))
+                .map(x -> carAggregateDTO)
+                .map(CarAggregateDTO::getEngine)
+                .flatMapMany(Flux::fromIterable)
+                .flatMap(x -> engineServiceClient.updateEngine(carUUID, x))
+                .collectList()
+                .map(x -> carAggregateDTO);
     }
 
     // todo update

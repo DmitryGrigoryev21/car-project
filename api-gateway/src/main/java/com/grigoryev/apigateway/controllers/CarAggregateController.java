@@ -51,26 +51,16 @@ public class CarAggregateController {
 
     }
 
-    @PostMapping(
-            value = "/test",
+    @PutMapping(
+            value = "/car/{carUUID}",
             consumes = "application/json"
     )
-    public Mono<ResponseEntity<EngineDTO>> test(@RequestBody EngineDTO engineDTO){
-
-        return carAggregateService.test(engineDTO)
+    public Mono<ResponseEntity<CarAggregateDTO>> updateAggregate(@RequestBody CarAggregateDTO carAggregateDTO, @PathVariable String carUUID){
+        return carAggregateService.updateCarAggregate(carAggregateDTO, carUUID)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
-
     }
 
-//    @PutMapping(
-//            value = "/car/{caruuid}",
-//            consumes = "application/json"
-//    )
-//    public ResponseEntity<Flux<CarAggregateDTO>> updateAggregate(@RequestBody CarAggregateDTO updateAgg, @PathVariable String uuid){
-//        return ResponseEntity.status(HttpStatus.OK).body(carAggregateService.updateAggregate(updateAgg, uuid));
-//    }
-//
     @DeleteMapping(
             value = "/car/{carUUID}",
             produces = "application/json"

@@ -16,6 +16,21 @@ mongodb:
   embedded:
     version: 4.8.21
 
+---
+spring:
+  config:
+    activate:
+      on-profile: integration
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: engine
+      username: root
+      password: password
+      authentication-database: admin
+
+---
 spring:
   config:
     activate:

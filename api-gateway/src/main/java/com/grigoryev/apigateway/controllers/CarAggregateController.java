@@ -62,15 +62,6 @@ public class CarAggregateController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PutMapping(
-            value = "/test/{carUUID}",
-            consumes = "application/json"
-    )
-    public Mono<ResponseEntity<EngineDTO>> test(@RequestBody EngineDTO engineDTO, @PathVariable String carUUID){
-        return carAggregateService.test(carUUID, engineDTO)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
 
     @DeleteMapping(
             value = "/car/{carUUID}",

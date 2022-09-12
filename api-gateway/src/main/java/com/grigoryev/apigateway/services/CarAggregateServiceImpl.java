@@ -82,7 +82,10 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                     carAggregateDTO.setEngine(x);
                     return carAggregateDTO;
                 });
+
     }
+
+
 
     @Override
     public Mono<CarAggregateDTO> updateCarAggregate(CarAggregateDTO carAggregateDTO, String carUUID){
@@ -96,10 +99,6 @@ public class CarAggregateServiceImpl implements CarAggregateService{
                 .map(x -> carAggregateDTO);
     }
 
-    @Override
-    public Mono<EngineDTO> test(String engineUUID, EngineDTO engineDTO){
-        return engineServiceClient.updateEngine(engineUUID,engineDTO);
-    }
 
     // todo make params mono
 
@@ -109,3 +108,12 @@ public class CarAggregateServiceImpl implements CarAggregateService{
         return carServiceClient.deleteCar(carUUID);
     }
 }
+
+
+
+//might need for set
+//                carAggregateDTO.doOnNext(e -> e.setCarUUID(x.getCarUUID()));
+//                .flatMap(x -> x.flatMap(y -> Mono.just(y.getEngine())))
+//                .doOnNext(x -> x.forEach(y -> carAggregateDTO.doOnNext(e -> y.setCarUUID(e.getCarUUID()))))
+//                carAggregateDTO.doOnNext(e -> e.setEngine(x));
+//                .flatMap(x -> carAggregateDTO);

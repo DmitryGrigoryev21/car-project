@@ -1,11 +1,13 @@
 package com.grigoryev.engineservice.deliverancelayer;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 
 @Data
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Engine {
 
     @Id
@@ -16,4 +18,6 @@ public class Engine {
     private String fuelType;
     private Integer cylinders;
     private Integer price;
+
+
 }

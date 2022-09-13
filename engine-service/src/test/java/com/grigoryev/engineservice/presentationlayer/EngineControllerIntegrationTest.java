@@ -2,6 +2,7 @@ package com.grigoryev.engineservice.presentationlayer;
 
 import com.grigoryev.engineservice.deliverancelayer.Engine;
 import com.grigoryev.engineservice.deliverancelayer.EngineRepository;
+import com.grigoryev.engineservice.util.EntityDTOUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.test.StepVerifier;
+import static reactor.core.publisher.Mono.just;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -35,10 +38,10 @@ class EngineControllerIntegrationTest {
 
 
         Engine engineEntity = buildEngine();
-        Engine engineEntity2 = buildEngine2();
-        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));           // Figure out how to input two entities and test them both
+        Engine engineEntity2 = buildEngine2();      // Figure out how to input two entities and test them both (it currently does not work)
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
 
-        repo.save(engineEntity2);
+
 
         StepVerifier
                 .create(setup)
@@ -95,7 +98,7 @@ class EngineControllerIntegrationTest {
 
         Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
 
-        Publisher<Engine> test = repo.findEnginesByCarUUID(CAR_UUID);
+
         StepVerifier
                 .create(setup)
                 .expectNextCount(1)
@@ -115,11 +118,60 @@ class EngineControllerIntegrationTest {
 
     @Test
     void insertEngine() {
+
+        Engine engineEntity = buildEngine();
+
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        client.post()
+                .uri("/engine")
+                .body(just(engineEntity), Engine.class)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody();
+
+
+
     }
 
     @Test
-    void updateEngine() {
+    void updateEngine() {               // Check with the teacher to see if this is correct
+
+        Engine engineEntity = buildEngine();
+        Engine engineEntity2 = buildEngine2();
+        engineEntity2.setEngineUUID("EngineUUID");
+        engineEntity2.setCarUUID("CarUUID");
+        engineEntity2.setId("Id");
+
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        client.put()
+                .uri("/engine/" + engineEntity.getEngineUUID())
+                .body(just(engineEntity2), Engine.class)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(engineEntity2.getName());
+
+
+
     }
+
+
 
     @Test
     void deleteEngineByEngineUUID() {

@@ -32,13 +32,38 @@ class EngineControllerIntegrationTest {
 
     @Test
     void getAllEngines() {
+
+
+        Engine engineEntity = buildEngine();
+        Engine engineEntity2 = buildEngine2();
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));           // Figure out how to input two entities and test them both
+
+        repo.save(engineEntity2);
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        client.get()
+                .uri("/engine")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$[0].engineUUID").isEqualTo(engineEntity.getEngineUUID())
+                .jsonPath("$[0].name").isEqualTo(engineEntity.getName())
+                .jsonPath("$[0].fuelType").isEqualTo(engineEntity.getFuelType())
+                .jsonPath("$[0].carUUID").isEqualTo(engineEntity.getCarUUID());
+
     }
 
     @Test
     void whenEngineUUIDIsValidReturnEngine() {
 
         Engine engineEntity = buildEngine();
-        String ENGINE_ID_OKAY_UUID = engineEntity.getEngineUUID();
+        String ENGINE_OKAY_UUID = engineEntity.getEngineUUID();
 
         Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
 
@@ -48,7 +73,7 @@ class EngineControllerIntegrationTest {
                 .verifyComplete();
 
         client.get()
-                .uri("/engine/" + ENGINE_ID_OKAY_UUID)
+                .uri("/engine/" + ENGINE_OKAY_UUID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -62,7 +87,30 @@ class EngineControllerIntegrationTest {
     }
 
     @Test
-    void getEngineByCarUUID() {
+    void whenCarUUIDIsValidReturnEnginesByCarUUID() {
+
+
+        Engine engineEntity = buildEngine();
+        String CAR_UUID = engineEntity.getCarUUID();
+
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
+
+        Publisher<Engine> test = repo.findEnginesByCarUUID(CAR_UUID);
+        StepVerifier
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        client.get()
+                .uri("/engine/car/" + CAR_UUID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$[0].name").isEqualTo(engineEntity.getName())
+                .jsonPath("$[0].fuelType").isEqualTo(engineEntity.getFuelType())
+                .jsonPath("$[0].carUUID").isEqualTo(engineEntity.getCarUUID());
     }
 
     @Test
@@ -75,14 +123,57 @@ class EngineControllerIntegrationTest {
 
     @Test
     void deleteEngineByEngineUUID() {
+
+        Engine entity = buildEngine();
+
+        repo.save(entity);
+
+        Publisher<Void> setup = repo.deleteEngineByEngineUUID(buildEngine().getEngineUUID());
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(0)
+                .verifyComplete();
+
+        client.delete()
+                .uri("/engine/" + entity.getEngineUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody();
+
+
     }
 
     @Test
     void deleteEngineByCarUUID() {
+
+        Engine entity = buildEngine();
+
+        repo.save(entity);
+
+        Publisher<Void> setup = repo.deleteEngineByEngineUUID(buildEngine().getCarUUID());
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(0)
+                .verifyComplete();
+
+        client.delete()
+                .uri("/engine/car/" + entity.getCarUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody();
     }
 
     private Engine buildEngine(){
         return Engine.builder().id("Id").engineUUID("EngineUUID")
                 .carUUID("CarUUID").name("L5P").cylinders(8).fuelType("Diesel").price(10000).build();
+    }
+
+    private Engine buildEngine2(){
+        return Engine.builder().id("Id2").engineUUID("EngineUUID2")
+                .carUUID("CarUUID2").name("LB7").cylinders(8).fuelType("Diesel").price(5000).build();
     }
 }

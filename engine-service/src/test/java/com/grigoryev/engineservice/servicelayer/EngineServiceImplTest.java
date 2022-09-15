@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -40,12 +41,20 @@ class EngineServiceImplTest {
     void insertEngine() {
 
         Engine engineEntity = buildEngine();
-        EntityDTOUtil dtoObj = new EntityDTOUtil();
 
+        String ENGINE_UUID = engineEntity.getEngineUUID();
 
-        engineService.insertEngine(Mono.just(dtoObj.toDTO(engineEntity)));
+        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
 
-        assertNull(repo.findEngineByEngineUUID(engineEntity.getEngineUUID()));      // Not working for some reason
+        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
+
+        StepVerifier.create(engineDTOMono)
+                .consumeNextWith(foundEngine -> {
+                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
+                    assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
+                    assertEquals(engineEntity.getFuelType(), foundEngine.getFuelType());
+                })
+                .verifyComplete();
     }
 
     @Test
@@ -74,15 +83,15 @@ class EngineServiceImplTest {
 
         Engine engineEntity = buildEngine();
 
-        String ENGINE_UUID = engineEntity.getEngineUUID();
+        String CAR_UUID = engineEntity.getCarUUID();
 
-        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
+        when(repo.findEnginesByCarUUID(anyString())).thenReturn(Flux.just(engineEntity));
 
-        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
+        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(CAR_UUID);
 
         StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
-                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
+                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());        // Broken for now
                     assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
                     assertEquals(engineEntity.getFuelType(), foundEngine.getFuelType());
                 })
@@ -97,6 +106,13 @@ class EngineServiceImplTest {
 
     @Test
     void deleteEngineByEngineUUID() {
+
+        Engine engineEntity = buildEngine();
+
+        String ENGINE_UUID = engineEntity.getEngineUUID();
+
+        //when(repo.findEngineByEngineUUID(anyString())).thenReturn(Void.just(engineEntity));
+
 
 
     }

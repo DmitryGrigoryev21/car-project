@@ -1,20 +1,22 @@
 server:
   error:
     include-message: always
+  logging:
+    level:
+      root: INFO
+      com.grigoryev: DEBUG
 
-logging:
-  level:
-    root: INFO
-    com.grigoryev: DEBUG
-
-data:
+spring:
+  config:
+    activate:
+      on-profile: default
+  data:
+    mongodb:
+      port: 0
+      database: car
   mongodb:
-    port: 0
-    database: car
-
-mongodb:
-  embedded:
-    version: 4.8.21
+    embedded:
+      version: 4.0.21
 
 ---
 spring:

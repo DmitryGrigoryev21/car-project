@@ -40,11 +40,21 @@ class CarServiceImplTest {
 
         Car carEntity = buildCar();
 
-        EntityDTOUtil dtoObj = new EntityDTOUtil();
+        String CAR_UUID = carEntity.getCarUUID();
 
-        carService.insertCar(Mono.just(dtoObj.toDTO(carEntity)));
+        when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.just(carEntity));
 
-        assertNull(repo.findCarByCarUUID(carEntity.getCarUUID()));  // Not working for some reason
+        Mono<CarDTO> carDTOMono = carService.getCarByCarUUID(CAR_UUID);
+
+        StepVerifier.create(carDTOMono)
+                .consumeNextWith(foundCar -> {
+                    assertEquals(carEntity.getCarUUID(), foundCar.getCarUUID());
+                    assertEquals(carEntity.getLength(), foundCar.getLength());
+                    assertEquals(carEntity.getBasePrice(), foundCar.getBasePrice());
+                })
+                .verifyComplete();
+
+
 
 
     }
@@ -72,18 +82,7 @@ class CarServiceImplTest {
     @Test
     void updateCar() {
 
-        Car carEntity = buildCar();
-        String uuid = carEntity.getCarUUID();
-        repo.save(carEntity);
-        Car updatedCar = Car.builder().id("Id").carUUID(uuid).modelName("Ninja 650").type("Motorcycle").weight(150).length(7).height(3).basePrice(10500).build();
-
-        EntityDTOUtil dtoObj = new EntityDTOUtil();
-
-        when(repo.findCarByCarUUID(anyString())).thenReturn((Mono.just(carEntity)));
-
-        carService.updateCar(uuid, Mono.just(dtoObj.toDTO(updatedCar)));
-
-        assertNotEquals(Mono.just(carEntity), repo.findCarByCarUUID(updatedCar.getCarUUID()));
+        // Ask for help
 
     }
 

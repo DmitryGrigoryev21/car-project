@@ -87,11 +87,11 @@ class EngineServiceImplTest {
 
         when(repo.findEnginesByCarUUID(anyString())).thenReturn(Flux.just(engineEntity));
 
-        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(CAR_UUID);
+        Flux<EngineDTO> engineDTOMono = engineService.getEnginesByCarUUID(CAR_UUID);
 
         StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
-                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());        // Broken for now
+                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
                     assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
                     assertEquals(engineEntity.getFuelType(), foundEngine.getFuelType());
                 })
@@ -103,17 +103,24 @@ class EngineServiceImplTest {
     void updateEngine() {
 
         // Ask for help
+        // Save
 
     }
 
     @Test
-    void deleteEngineByEngineUUID() {
+    void deleteEngineByEngineUUID() {       // Will come back to this one
 
         Engine engineEntity = buildEngine();
 
         String ENGINE_UUID = engineEntity.getEngineUUID();
 
-        //when(repo.findEngineByEngineUUID(anyString())).thenReturn(Void.just(engineEntity));
+        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.empty());
+
+        Mono<Void> deletedObj = engineService.deleteEngine(ENGINE_UUID);
+
+        StepVerifier.create(deletedObj)
+                .expectNextCount(0)
+                .verifyComplete();
 
 
 

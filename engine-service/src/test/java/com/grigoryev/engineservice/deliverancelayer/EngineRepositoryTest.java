@@ -20,9 +20,9 @@ class EngineRepositoryTest {
 
         Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(buildEngine()));
 
-        StepVerifier
+        StepVerifier    // Fuzzy
                 .create(setup)
-                .expectNextCount(1)
+                .expectNextCount(1)     // On next
                 .verifyComplete();
 
     }
@@ -32,33 +32,38 @@ class EngineRepositoryTest {
 
         Engine engine = buildEngine();
 
-        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engine));
+        Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(buildEngine()));
+        Publisher<Engine> find = repo.findEnginesByCarUUID(engine.getCarUUID());
 
-        Publisher<Engine> test = repo.findEnginesByCarUUID(engine.getCarUUID());
-
-        Publisher<Engine> test2 = Flux.from(setup).thenMany(test);
 
         StepVerifier
-                .create(test2)
-                .expectNext(engine)
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        StepVerifier
+                .create(find)
+                .expectNextCount(1)
                 .verifyComplete();
     }
 
 
     @Test
-    void shouldFindEngineByEngineUUID() {
+    void shouldFindEngineByEngineUUID() {   // Update from above
 
         Engine engine = buildEngine();
 
         Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engine));
-
-        Publisher<Engine> test = repo.findEngineByEngineUUID(engine.getEngineUUID());
-
-        Publisher<Engine> test2 = Flux.from(setup).thenMany(test);
+        Publisher<Engine> find = repo.findEngineByEngineUUID(engine.getEngineUUID());
 
         StepVerifier
-                .create(test2)
+                .create(setup)
                 .expectNext(engine)
+                .verifyComplete();
+
+        StepVerifier
+                .create(find)
+                .expectNextCount(1)
                 .verifyComplete();
     }
 
@@ -70,6 +75,7 @@ class EngineRepositoryTest {
         repo.save(engine);
 
         Publisher<Void> setup = repo.deleteEngineByEngineUUID(engine.getEngineUUID());
+
 
         StepVerifier
                 .create(setup)

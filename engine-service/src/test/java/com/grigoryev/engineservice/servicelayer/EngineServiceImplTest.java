@@ -105,10 +105,14 @@ class EngineServiceImplTest {
         // Ask for help
         // Save
 
+        Engine engineEntity = buildEngine();
+
+        String ENGINE_UUID = engineEntity.getEngineUUID();
+
     }
 
     @Test
-    void deleteEngineByEngineUUID() {       // Will come back to this one
+    void deleteEngineByEngineUUID() {
 
         Engine engineEntity = buildEngine();
 
@@ -128,6 +132,18 @@ class EngineServiceImplTest {
 
     @Test
     void deleteEngineByCarUUID() {
+
+        Engine engineEntity = buildEngine();
+
+        String CAR_UUID = engineEntity.getCarUUID();
+
+        when(repo.findEnginesByCarUUID(anyString())).thenReturn(Flux.empty());
+
+        Flux<Void> deletedObj = engineService.deleteEngineByCar(CAR_UUID);
+
+        StepVerifier.create(deletedObj)
+                .expectNextCount(0)
+                .verifyComplete();
 
 
     }

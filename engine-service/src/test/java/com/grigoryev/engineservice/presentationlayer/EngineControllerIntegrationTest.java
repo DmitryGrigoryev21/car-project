@@ -128,7 +128,7 @@ class EngineControllerIntegrationTest {
                 .expectNextCount(1)
                 .verifyComplete();
 
-        client.post()
+        client.post()                                                                   // Checking if the insert works
                 .uri("/engine")
                 .body(just(engineEntity), Engine.class)
                 .exchange()
@@ -137,14 +137,23 @@ class EngineControllerIntegrationTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
 
-        // Test the saved object
-
+        client.get()                                                                    // Checking if the item was posted properly
+                .uri("/engine/" + engineEntity.getEngineUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(engineEntity.getName())
+                .jsonPath("$.fuelType").isEqualTo(engineEntity.getFuelType())
+                .jsonPath("$.carUUID").isEqualTo(engineEntity.getCarUUID());
 
 
     }
 
+
     @Test
-    void updateEngine() {               // Check with the teacher to see if this is correct
+    void updateEngine() {
 
         Engine engineEntity = buildEngine();
         Engine engineEntity2 = buildEngine2();
@@ -154,10 +163,21 @@ class EngineControllerIntegrationTest {
 
         Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
 
-        StepVerifier
+        StepVerifier                    // Setting up
                 .create(setup)
                 .expectNextCount(1)
                 .verifyComplete();
+
+        client.get()                                                                    // Checking the original item
+                .uri("/engine/" + engineEntity.getEngineUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(engineEntity.getName())
+                .jsonPath("$.fuelType").isEqualTo(engineEntity.getFuelType())
+                .jsonPath("$.price").isEqualTo(engineEntity.getPrice());
 
         client.put()
                 .uri("/engine/" + engineEntity.getEngineUUID())
@@ -169,9 +189,19 @@ class EngineControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$.name").isEqualTo(engineEntity2.getName());
 
-
+        client.get()                                                                    // Checking if the item was updated properly
+                .uri("/engine/" + engineEntity.getEngineUUID())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(engineEntity2.getName())
+                .jsonPath("$.fuelType").isEqualTo(engineEntity2.getFuelType())
+                .jsonPath("$.price").isEqualTo(engineEntity2.getPrice());
 
     }
+
 
 
 

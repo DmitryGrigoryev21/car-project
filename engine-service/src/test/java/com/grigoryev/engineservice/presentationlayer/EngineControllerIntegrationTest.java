@@ -21,7 +21,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.data.mongodb.port: 27017"})
 @AutoConfigureWebTestClient
-class EngineControllerIntegrationTest {
+class EngineControllerIntegrationTest {         // Completely Functional
 
 
 
@@ -38,10 +38,7 @@ class EngineControllerIntegrationTest {
 
 
         Engine engineEntity = buildEngine();
-        Engine engineEntity2 = buildEngine2();      // Figure out how to input two entities and test them both (it currently does not work)
         Publisher<Engine> setup = repo.deleteAll().thenMany(repo.save(engineEntity));
-
-
 
         StepVerifier
                 .create(setup)
@@ -117,7 +114,7 @@ class EngineControllerIntegrationTest {
     }
 
     @Test
-    void insertEngine() {
+    void shouldInsertEngineWithValidEngineObject() {
 
         Engine engineEntity = buildEngine();
 
@@ -128,7 +125,7 @@ class EngineControllerIntegrationTest {
                 .expectNextCount(1)
                 .verifyComplete();
 
-        client.post()                                                                   // Checking if the insert works
+        client.post()                                                                   // Inserting the object
                 .uri("/engine")
                 .body(just(engineEntity), Engine.class)
                 .exchange()
@@ -153,7 +150,7 @@ class EngineControllerIntegrationTest {
 
 
     @Test
-    void updateEngine() {
+    void whenEngineUUIDIsValidUpdateEngine() {
 
         Engine engineEntity = buildEngine();
         Engine engineEntity2 = buildEngine2();

@@ -3,6 +3,7 @@ package com.grigoryev.engineservice.presentationlayer;
 import com.grigoryev.engineservice.deliverancelayer.Engine;
 import com.grigoryev.engineservice.servicelayer.EngineDTO;
 import com.grigoryev.engineservice.servicelayer.EngineService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ class EngineControllerUnitTest {
     EngineService engineService;
 
     @Test
-    void getAllEngines() { // Does not work
+    void getAllEngines() {
 
         when(engineService.getAll()).thenReturn(Flux.just(dto));
 
@@ -94,7 +95,7 @@ class EngineControllerUnitTest {
     }
 
     @Test
-    void insertEngine() {
+    void insertEngine() {       // To fix at a later date.
 
         when(engineService.getEngineByEngineUUID(anyString())).thenReturn(Mono.just(dto));
 
@@ -107,11 +108,11 @@ class EngineControllerUnitTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
 
-        Mockito.verify(engineService, times(1)).insertEngine(Mono.just(dto));       // This is broken (ask for help in the morning)
+        Mockito.verify(engineService, times(1)).insertEngine(Mono.just(dto));
     }
 
     @Test
-    void updateEngine() {           // Does not work
+    void updateEngine() {           // To fix at a later date.
 
         when(engineService.getEngineByEngineUUID(anyString())).thenReturn(Mono.just(dto));
         EngineDTO engineDto2 = buildEngineDTO();
@@ -125,8 +126,6 @@ class EngineControllerUnitTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
-                // .jsonPath("$.name").isEqualTo(engineDto2.getName())
-                // .jsonPath("$.fuelType").isEqualTo(dto.getFuelType());
 
         Mockito.verify(engineService, times(1)).updateEngine(ENGINE_UUID_OK, Mono.just(dto));
 

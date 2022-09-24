@@ -34,14 +34,16 @@ class CarRepositoryTest {
         Car car = buildCar();
 
         Publisher<Car> setup = repo.deleteAll().thenMany(repo.save(car));
-
-        Publisher<Car> test = repo.findCarByCarUUID(car.getCarUUID());
-
-        Publisher<Car> test2 = Flux.from(setup).thenMany(test);
+        Publisher<Car> find = repo.findCarByCarUUID(car.getCarUUID());
 
         StepVerifier
-                .create(test2)
-                .expectNext(car)
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        StepVerifier
+                .create(find)
+                .expectNextCount(1)
                 .verifyComplete();
     }
 
@@ -63,6 +65,4 @@ class CarRepositoryTest {
     private Car buildCar(){
         return Car.builder().id("Id").carUUID("CarUUID").modelName("Ninja 400").type("Motorcycle").weight(100).length(7).height(3).basePrice(6500).build();
     }
-
-    // Should I add more???
 }

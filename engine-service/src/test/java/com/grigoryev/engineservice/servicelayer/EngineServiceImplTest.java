@@ -2,7 +2,7 @@ package com.grigoryev.engineservice.servicelayer;
 
 import com.grigoryev.engineservice.deliverancelayer.Engine;
 import com.grigoryev.engineservice.deliverancelayer.EngineRepository;
-import com.grigoryev.engineservice.util.EntityDTOUtil;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -34,19 +34,33 @@ class EngineServiceImplTest {
     @Test
     void getAll() {
 
-        // Do not know
-    }
-
-    @Test
-    void insertEngine() {
 
         Engine engineEntity = buildEngine();
 
+        when(repo.findAll()).thenReturn(Flux.just(engineEntity));
+
+        Flux<EngineDTO> engineDTOMono = engineService.getAll();
+
+        StepVerifier.create(engineDTOMono)
+                .consumeNextWith(foundEngine ->{
+                    assertNotNull(foundEngine);
+                })
+                .verifyComplete();
+
+    }
+
+    @Test
+    void insertEngine() {   // I do not think its a proper insert test. It just could be another get test.
+
+        Engine engineEntity = buildEngine();
+        // EngineDTO dtoObj = buildEngineDto();
         String ENGINE_UUID = engineEntity.getEngineUUID();
 
         when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
 
         Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
+
+        // Mono<EngineDTO> engineDTO = engineService.insertEngine(Mono.just(engineDTO));
 
         StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
@@ -56,6 +70,30 @@ class EngineServiceImplTest {
                 })
                 .verifyComplete();
     }
+
+
+    @Test
+    void getEnginesByCarUUID() {
+
+        Engine engineEntity = buildEngine();
+
+
+        String CAR_UUID = engineEntity.getCarUUID();
+
+        when(repo.findEnginesByCarUUID(anyString())).thenReturn(Flux.just(engineEntity));
+
+        Flux<EngineDTO> engineDTOMono = engineService.getEnginesByCarUUID(CAR_UUID);
+
+        StepVerifier.create(engineDTOMono)
+                .consumeNextWith(foundEngine -> {
+                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
+                    assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
+                    assertEquals(engineEntity.getFuelType(), foundEngine.getFuelType());
+                })
+                .verifyComplete();
+
+    }
+
 
     @Test
     void getEngineByEngineUUID() {
@@ -79,35 +117,24 @@ class EngineServiceImplTest {
     }
 
     @Test
-    void getEnginesByCarUUID() {
+    void updateEngine() {           // Broken
+
 
         Engine engineEntity = buildEngine();
+        String ENGINE_UUID = engineEntity.getEngineUUID();
 
-        String CAR_UUID = engineEntity.getCarUUID();
+        EngineDTO engineDTO = buildEngineDTO();
 
-        when(repo.findEnginesByCarUUID(anyString())).thenReturn(Flux.just(engineEntity));
+        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
 
-        Flux<EngineDTO> engineDTOMono = engineService.getEnginesByCarUUID(CAR_UUID);
+        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
+
 
         StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
-                    assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
-                    assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());
-                    assertEquals(engineEntity.getFuelType(), foundEngine.getFuelType());
+                    assertNotEquals(engineEntity.getName(), foundEngine.getName());
                 })
                 .verifyComplete();
-
-    }
-
-    @Test
-    void updateEngine() {
-
-        // Ask for help
-        // Save
-
-        Engine engineEntity = buildEngine();
-
-        String ENGINE_UUID = engineEntity.getEngineUUID();
 
     }
 
@@ -126,12 +153,10 @@ class EngineServiceImplTest {
                 .expectNextCount(0)
                 .verifyComplete();
 
-
-
     }
 
     @Test
-    void deleteEngineByCarUUID() {
+    void deleteEngineByCarUUID() {      //  Does not work
 
         Engine engineEntity = buildEngine();
 
@@ -151,5 +176,16 @@ class EngineServiceImplTest {
     private Engine buildEngine(){
         return Engine.builder().id("Id").engineUUID("EngineUUID")
                 .carUUID("CarUUID").name("L5P").cylinders(8).fuelType("Diesel").price(10000).build();
+    }
+
+    private Engine buildEngine2(){
+        return Engine.builder().id("Id2").engineUUID("EngineUUID2")
+                .carUUID("CarUUID2").name("LB7").cylinders(8).fuelType("Diesel").price(5000).build();
+    }
+
+
+    private EngineDTO buildEngineDTO(){
+        return EngineDTO.builder().engineUUID("EngineUUID")
+                .carUUID("CarUUID").name("SwagEngine").cylinders(8).fuelType("Swag").price(15000).build();
     }
 }

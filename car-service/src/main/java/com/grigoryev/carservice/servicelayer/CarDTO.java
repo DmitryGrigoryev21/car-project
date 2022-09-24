@@ -1,11 +1,10 @@
 package com.grigoryev.carservice.servicelayer;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @ToString
+@Builder
 @NoArgsConstructor
 public class CarDTO {
 

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -33,6 +34,18 @@ class CarServiceImplTest {
 
     @Test
     void getAll() {
+
+        Car carEntity = buildCar();
+
+        when(repo.findAll()).thenReturn(Flux.just(carEntity));
+
+        Flux<CarDTO> carDTOFlux = carService.getAll();
+
+        StepVerifier.create(carDTOFlux)
+                .consumeNextWith(foundCar -> {
+                    assertNotNull(foundCar);
+                })
+                .verifyComplete();
     }
 
     @Test
@@ -80,25 +93,46 @@ class CarServiceImplTest {
     }
 
     @Test
-    void updateCar() {
+    void updateCar() {      //  Broken
 
-        // Ask for help
+        Car carEntity = buildCar();
+        String CAR_UUID = carEntity.getCarUUID();
+        CarDTO dto = buildCarDTO();
+
+        dto.setModelName("Ninja 650");
+
+        when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.just(carEntity));
+
+        Mono<CarDTO> carDTOMono = carService.updateCar(CAR_UUID, Mono.just(dto));
+
+        StepVerifier.create(carDTOMono)
+                .consumeNextWith(foundCar -> {
+                    assertNotEquals(carEntity.getModelName(), foundCar.getModelName());
+                })
+                .verifyComplete();
 
     }
 
-    @Test
+    @Test               // Broken
     void deleteCar() {
 
         Car carEntity = buildCar();
 
-        repo.save(carEntity);
+        when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.empty());
 
-        carService.deleteCar(carEntity.getCarUUID());
+        Mono<Void> deletedObj = carService.deleteCar(carEntity.getCarUUID());
 
-        assertNull(repo.findCarByCarUUID(carEntity.getCarUUID()));
+        StepVerifier.create(deletedObj)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     private Car buildCar(){
         return Car.builder().id("Id").carUUID("CarUUID").modelName("Ninja 400").type("Motorcycle").weight(100).length(7).height(3).basePrice(6500).build();
+    }
+
+
+    private CarDTO buildCarDTO(){
+        return CarDTO.builder().carUUID("CarUUID").modelName("Ninja 400").type("Motorcycle").weight(100).length(7).height(3).basePrice(6500).build();
     }
 }

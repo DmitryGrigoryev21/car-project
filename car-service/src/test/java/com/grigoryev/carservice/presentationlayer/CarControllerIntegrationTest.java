@@ -53,8 +53,7 @@ class CarControllerIntegrationTest {
     }
 
     @Test
-    void getCarByCarUUID() {
-
+    void whenValidCarUUIDReturnCar() {
 
         Car carEntity = buildCar();
 
@@ -80,10 +79,47 @@ class CarControllerIntegrationTest {
     }
 
     @Test
-    void insertCar() {
-
+    void shouldInsertCarWithValidCarObject() {
 
         Car carEntity = buildCar();
+        String CAR_UUID_OK = carEntity.getCarUUID();
+
+        Publisher<Car> setup = repo.deleteAll().thenMany(repo.save(carEntity));
+
+        StepVerifier
+                .create(setup)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        client.post()
+                .uri("/car")
+                .body(just(carEntity), Car.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody();
+
+        client.get()
+                .uri("/car/" + CAR_UUID_OK)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.modelName").isEqualTo(carEntity.getModelName())
+                .jsonPath("$.type").isEqualTo(carEntity.getType())
+                .jsonPath("$.carUUID").isEqualTo(carEntity.getCarUUID());
+    }
+
+    @Test
+    void whenCarUUIDIsValidUpdateCar() {
+
+        Car carEntity = buildCar();
+        Car carEntity2 = buildCar();
+        carEntity2.setCarUUID("CarUUID2");
+        carEntity2.setId("Id2");
+        carEntity2.setModelName("Ninja 650");
+        String CAR_UUID_OK = carEntity.getCarUUID();
 
         Publisher<Car> setup = repo.deleteAll().thenMany(repo.save(carEntity));
 
@@ -93,31 +129,15 @@ class CarControllerIntegrationTest {
                 .verifyComplete();
 
         client.get()
-                .uri("/car")
+                .uri("/car/" + CAR_UUID_OK)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody();
-    }
-
-    @Test
-    void updateCar() {
-
-        Car carEntity = buildCar();
-        Car carEntity2 = buildCar();
-        carEntity2.setCarUUID("CarUUID2");
-        carEntity2.setId("Id2");
-        carEntity2.setModelName("Ninja 650");
-        String CAR_UUID_OK = carEntity.getCarUUID();
-
-
-        Publisher<Car> setup = repo.deleteAll().thenMany(repo.save(carEntity));
-
-        StepVerifier
-                .create(setup)
-                .expectNextCount(1)
-                .verifyComplete();
+                .expectBody()
+                .jsonPath("$.modelName").isEqualTo(carEntity.getModelName())
+                .jsonPath("$.type").isEqualTo(carEntity.getType())
+                .jsonPath("$.carUUID").isEqualTo(carEntity.getCarUUID());
 
         client.put()
                 .uri("/car/" + CAR_UUID_OK)
@@ -128,6 +148,19 @@ class CarControllerIntegrationTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.modelName").isEqualTo(carEntity2.getModelName());
+
+        client.get()
+                .uri("/car/" + CAR_UUID_OK)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.modelName").isEqualTo(carEntity2.getModelName())       // Checks if the value is equal to the updated value
+                .jsonPath("$.type").isEqualTo(carEntity.getType())
+                .jsonPath("$.carUUID").isEqualTo(carEntity.getCarUUID());
+
+
     }
 
     @Test

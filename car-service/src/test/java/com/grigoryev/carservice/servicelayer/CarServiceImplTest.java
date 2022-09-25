@@ -4,6 +4,7 @@ import com.grigoryev.carservice.deliverancelayer.Car;
 import com.grigoryev.carservice.deliverancelayer.CarRepository;
 import com.grigoryev.carservice.util.EntityDTOUtil;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -49,26 +51,19 @@ class CarServiceImplTest {
     }
 
     @Test
-    void insertCar() {
+    void insertCar() {                      // Broken
 
+        CarDTO dto = buildCarDTO();
         Car carEntity = buildCar();
 
-        String CAR_UUID = carEntity.getCarUUID();
-
         when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.just(carEntity));
+        when(repo.save(any(Car.class))).thenReturn(Mono.just(carEntity));
 
-        Mono<CarDTO> carDTOMono = carService.getCarByCarUUID(CAR_UUID);
+        Mono<CarDTO> carDTOMono = carService.insertCar(Mono.just(dto));
 
         StepVerifier.create(carDTOMono)
-                .consumeNextWith(foundCar -> {
-                    assertEquals(carEntity.getCarUUID(), foundCar.getCarUUID());
-                    assertEquals(carEntity.getLength(), foundCar.getLength());
-                    assertEquals(carEntity.getBasePrice(), foundCar.getBasePrice());
-                })
+                .expectNextCount(1)
                 .verifyComplete();
-
-
-
 
     }
 
@@ -93,17 +88,20 @@ class CarServiceImplTest {
     }
 
     @Test
-    void updateCar() {      //  Broken
+    void updateCar() {
 
         Car carEntity = buildCar();
         String CAR_UUID = carEntity.getCarUUID();
         CarDTO dto = buildCarDTO();
-
         dto.setModelName("Ninja 650");
 
+        Car updatedCarEntity = new Car();
+        BeanUtils.copyProperties(carEntity, updatedCarEntity);                              // This part here
+        updatedCarEntity.setModelName(dto.getModelName());
         when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.just(carEntity));
+        when(repo.save(any(Car.class))).thenReturn(Mono.just(updatedCarEntity));
 
-        Mono<CarDTO> carDTOMono = carService.updateCar(CAR_UUID, Mono.just(dto));
+        Mono<CarDTO> carDTOMono = carService.updateCar(CAR_UUID, Mono.just(dto));           // This is what gets step verified
 
         StepVerifier.create(carDTOMono)
                 .consumeNextWith(foundCar -> {
@@ -113,12 +111,12 @@ class CarServiceImplTest {
 
     }
 
-    @Test               // Broken
+    @Test
     void deleteCar() {
 
         Car carEntity = buildCar();
 
-        when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.empty());
+        when(repo.deleteCarByCarUUID(anyString())).thenReturn(Mono.empty());
 
         Mono<Void> deletedObj = carService.deleteCar(carEntity.getCarUUID());
 

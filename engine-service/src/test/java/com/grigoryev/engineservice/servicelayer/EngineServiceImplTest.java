@@ -4,6 +4,7 @@ import com.grigoryev.engineservice.deliverancelayer.Engine;
 import com.grigoryev.engineservice.deliverancelayer.EngineRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import static org.mockito.ArgumentMatchers.any;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,14 +55,12 @@ class EngineServiceImplTest {
     void insertEngine() {   // I do not think its a proper insert test. It just could be another get test.
 
         Engine engineEntity = buildEngine();
-        // EngineDTO dtoObj = buildEngineDto();
+        EngineDTO dtoObj = buildEngineDTO();
         String ENGINE_UUID = engineEntity.getEngineUUID();
 
         when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
 
-        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
-
-        // Mono<EngineDTO> engineDTO = engineService.insertEngine(Mono.just(engineDTO));
+        Mono<EngineDTO> engineDTOMono = engineService.insertEngine(Mono.just(dtoObj));
 
         StepVerifier.create(engineDTOMono)
                 .consumeNextWith(foundEngine -> {
@@ -117,17 +117,22 @@ class EngineServiceImplTest {
     }
 
     @Test
-    void updateEngine() {           // Broken
+    void updateEngine() {
 
 
         Engine engineEntity = buildEngine();
         String ENGINE_UUID = engineEntity.getEngineUUID();
+        EngineDTO dto = buildEngineDTO();
+        dto.setName("UpdatedEngine");
 
-        EngineDTO engineDTO = buildEngineDTO();
+        Engine updatedEngine = new Engine();
+        BeanUtils.copyProperties(engineEntity, updatedEngine);
+        updatedEngine.setName(dto.getName());
 
         when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
+        when(repo.save(any(Engine.class))).thenReturn(Mono.just(updatedEngine));
 
-        Mono<EngineDTO> engineDTOMono = engineService.getEngineByEngineUUID(ENGINE_UUID);
+        Mono<EngineDTO> engineDTOMono = engineService.updateEngine(ENGINE_UUID, Mono.just(dto));
 
 
         StepVerifier.create(engineDTOMono)
@@ -145,7 +150,7 @@ class EngineServiceImplTest {
 
         String ENGINE_UUID = engineEntity.getEngineUUID();
 
-        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.empty());
+        when(repo.deleteEngineByEngineUUID(anyString())).thenReturn(Mono.empty());
 
         Mono<Void> deletedObj = engineService.deleteEngine(ENGINE_UUID);
 
@@ -156,13 +161,13 @@ class EngineServiceImplTest {
     }
 
     @Test
-    void deleteEngineByCarUUID() {      //  Does not work
+    void deleteEngineByCarUUID() {
 
         Engine engineEntity = buildEngine();
 
         String CAR_UUID = engineEntity.getCarUUID();
 
-        when(repo.findEnginesByCarUUID(anyString())).thenReturn(Flux.empty());
+        when(repo.deleteEngineByCarUUID(anyString())).thenReturn(Flux.empty());
 
         Flux<Void> deletedObj = engineService.deleteEngineByCar(CAR_UUID);
 

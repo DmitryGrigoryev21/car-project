@@ -11,6 +11,8 @@
         <module name="car-project.engine-service.test" />
         <module name="car-project.engine-service.main" />
         <module name="car-project.car-service.main" />
+        <module name="engine-service.main" />
+        <module name="engine-service.test" />
       </profile>
     </annotationProcessing>
   </component>

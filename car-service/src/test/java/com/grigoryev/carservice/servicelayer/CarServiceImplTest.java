@@ -51,19 +51,23 @@ class CarServiceImplTest {
     }
 
     @Test
-    void insertCar() {                      // Broken
+    void insertCar() {
 
-        CarDTO dto = buildCarDTO();
-        Car carEntity = buildCar();
+      Car carEntity = buildCar();
 
-        when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.just(carEntity));
-        when(repo.save(any(Car.class))).thenReturn(Mono.just(carEntity));
+      Mono<Car> carMono = Mono.just(carEntity);
+      CarDTO carDTO = buildCarDTO();
 
-        Mono<CarDTO> carDTOMono = carService.insertCar(Mono.just(dto));
+      when(repo.insert(any(Car.class))).thenReturn(carMono);
 
-        StepVerifier.create(carDTOMono)
-                .expectNextCount(1)
-                .verifyComplete();
+      Mono<CarDTO> returnedCar = carService.insertCar(Mono.just(carDTO));
+
+      StepVerifier.create(returnedCar)
+              .consumeNextWith(monoDTO -> {
+                  assertEquals(carEntity.getModelName(), monoDTO.getModelName());
+                  assertEquals(carEntity.getCarUUID(), monoDTO.getCarUUID());
+              })
+              .verifyComplete();
 
     }
 

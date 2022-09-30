@@ -74,18 +74,22 @@ class CarControllerUnitTest {
 
     @Test
     void insertCar() {  // Broken
+        //when(billService.CreateBill(billDTOMono)).thenReturn(Mono.just(dto)); (for reference of course)
 
-        when(carService.getCarByCarUUID(anyString())).thenReturn(Mono.just(dto));
+        Mono<CarDTO> monoDTO =  Mono.just(dto);
+
+        when(carService.insertCar(monoDTO)).thenReturn(Mono.just(dto));
+
 
         client.post()
                 .uri("/car")
-                .body(just(dto), CarDTO.class)
+                .body(monoDTO, CarDTO.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
 
-        Mockito.verify(carService, times(1)).insertCar(Mono.just(dto));         // Broken
+        Mockito.verify(carService, times(1)).insertCar(monoDTO);
     }
 
     @Test

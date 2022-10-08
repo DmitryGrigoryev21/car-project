@@ -52,17 +52,19 @@ class EngineServiceImplTest {
     }
 
     @Test
-    void insertEngine() {   // I do not think its a proper insert test. It just could be another get test.
+    void insertEngine() {
 
         Engine engineEntity = buildEngine();
+
+        Mono<Engine> engineMono = Mono.just(engineEntity);
+
         EngineDTO dtoObj = buildEngineDTO();
-        String ENGINE_UUID = engineEntity.getEngineUUID();
 
-        when(repo.findEngineByEngineUUID(anyString())).thenReturn(Mono.just(engineEntity));
+        when(repo.insert(any(Engine.class))).thenReturn(engineMono);
 
-        Mono<EngineDTO> engineDTOMono = engineService.insertEngine(Mono.just(dtoObj));
+        Mono<EngineDTO> returnedEngine = engineService.insertEngine(Mono.just(dtoObj));
 
-        StepVerifier.create(engineDTOMono)
+        StepVerifier.create(returnedEngine)
                 .consumeNextWith(foundEngine -> {
                     assertEquals(engineEntity.getEngineUUID(), foundEngine.getEngineUUID());
                     assertEquals(engineEntity.getCarUUID(), foundEngine.getCarUUID());

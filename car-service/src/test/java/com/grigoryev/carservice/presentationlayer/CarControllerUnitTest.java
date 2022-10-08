@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static org.mockito.ArgumentMatchers.argThat;
 import static reactor.core.publisher.Mono.just;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -76,9 +78,11 @@ class CarControllerUnitTest {
     void insertCar() {  // Broken
         //when(billService.CreateBill(billDTOMono)).thenReturn(Mono.just(dto)); (for reference of course)
 
-        Mono<CarDTO> monoDTO =  Mono.just(dto);
+        CarDTO newDTO = buildSpecial();
 
-        when(carService.insertCar(monoDTO)).thenReturn(Mono.just(dto));
+        Mono<CarDTO> monoDTO =  Mono.just(newDTO);
+
+        when(carService.insertCar(monoDTO)).thenReturn(monoDTO);
 
 
         client.post()
@@ -88,6 +92,8 @@ class CarControllerUnitTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
+
+
 
         Mockito.verify(carService, times(1)).insertCar(monoDTO);
     }
@@ -132,5 +138,9 @@ class CarControllerUnitTest {
 
     private CarDTO buildCarDTO(){
         return CarDTO.builder().carUUID("CarUUID").modelName("Ninja 400").type("Motorcycle").weight(100).length(7).height(3).basePrice(6500).build();
+    }
+
+    private CarDTO buildSpecial(){
+        return CarDTO.builder().carUUID("CarUUID2").modelName("Ninja 650").type("Motorcycle").weight(110).length(7).height(3).basePrice(10000).build();
     }
 }

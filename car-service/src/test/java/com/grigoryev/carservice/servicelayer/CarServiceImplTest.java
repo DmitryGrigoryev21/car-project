@@ -100,12 +100,12 @@ class CarServiceImplTest {
         dto.setModelName("Ninja 650");
 
         Car updatedCarEntity = new Car();
-        BeanUtils.copyProperties(carEntity, updatedCarEntity);                              // This part here
+        BeanUtils.copyProperties(carEntity, updatedCarEntity);
         updatedCarEntity.setModelName(dto.getModelName());
         when(repo.findCarByCarUUID(anyString())).thenReturn(Mono.just(carEntity));
         when(repo.save(any(Car.class))).thenReturn(Mono.just(updatedCarEntity));
 
-        Mono<CarDTO> carDTOMono = carService.updateCar(CAR_UUID, Mono.just(dto));           // This is what gets step verified
+        Mono<CarDTO> carDTOMono = carService.updateCar(CAR_UUID, Mono.just(dto));
 
         StepVerifier.create(carDTOMono)
                 .consumeNextWith(foundCar -> {

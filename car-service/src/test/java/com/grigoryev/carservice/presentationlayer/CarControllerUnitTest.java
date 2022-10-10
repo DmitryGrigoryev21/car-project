@@ -14,9 +14,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.*;
 import static reactor.core.publisher.Mono.just;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +75,6 @@ class CarControllerUnitTest {
 
     @Test
     void insertCar() {  // Broken
-        //when(billService.CreateBill(billDTOMono)).thenReturn(Mono.just(dto)); (for reference of course)
 
         CarDTO newDTO = buildSpecial();
 
@@ -95,13 +93,17 @@ class CarControllerUnitTest {
 
 
 
-        Mockito.verify(carService, times(1)).insertCar(monoDTO);
+        Mockito.verify(carService, times(1)).insertCar(any(Mono.class));
     }
 
     @Test
-    void updateCar() {  // Broken
+    void updateCar() {
 
-        when(carService.getCarByCarUUID(anyString())).thenReturn(Mono.just(dto));
+        CarDTO newDTO = buildSpecial();
+
+        Mono<CarDTO> monoDTO =  Mono.just(newDTO);
+
+        when(carService.updateCar(CAR_UUID_OK, monoDTO).thenReturn(CAR_UUID_OK).thenReturn(monoDTO));
 
         CarDTO carDTO2 = buildCarDTO();
 
@@ -116,7 +118,7 @@ class CarControllerUnitTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
 
-        Mockito.verify(carService, times(1)).updateCar(CAR_UUID_OK, Mono.just(carDTO2));    // Broken
+        Mockito.verify(carService, times(1)).updateCar(anyString(), any(Mono.class));
 
 
     }

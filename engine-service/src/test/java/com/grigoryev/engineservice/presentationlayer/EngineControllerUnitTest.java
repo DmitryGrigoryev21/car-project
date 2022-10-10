@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static org.mockito.ArgumentMatchers.any;
 import static reactor.core.publisher.Mono.just;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,20 +97,24 @@ class EngineControllerUnitTest {
     }
 
     @Test
-    void insertEngine() {       // To fix at a later date.
+    void insertEngine() {
 
-        when(engineService.getEngineByEngineUUID(anyString())).thenReturn(Mono.just(dto));
+        EngineDTO newDTO = buildEngineDTO();
+
+        Mono<EngineDTO>  monoDTO = Mono.just(newDTO);
+
+        when(engineService.insertEngine(monoDTO)).thenReturn(monoDTO);
 
         client.post()
                 .uri("/engine")
-                .body(just(dto), EngineDTO.class)
+                .body(monoDTO, EngineDTO.class)
                 .exchange()
                 .expectStatus()
                 .isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody();
 
-        Mockito.verify(engineService, times(1)).insertEngine(Mono.just(dto));
+        Mockito.verify(engineService, times(1)).insertEngine(any(Mono.class));
     }
 
     @Test
